@@ -30,9 +30,14 @@ pipeline {
         }
         stage("Quality Gate"){
             steps{
-                timeout(time: 10, unit:"MINUTES"){
+                timeout(time: 5, unit:"MINUTES"){
                     waitForQualityGate abortPipeline: false
                 }
+            }
+        }
+        stage("Trivy File System Scan"){
+            steps{
+                sh "trivy fs . --format table -o fs-report.html ."
             }
         }
     }
