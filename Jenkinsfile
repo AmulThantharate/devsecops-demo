@@ -35,6 +35,12 @@ pipeline {
                 }
             }
         }
+        stage("OWASP"){
+            steps{
+                dependencyCheck additionalArguments: '--scan ./' , odcInstallation: 'OWASP'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
         stage("Trivy File System Scan"){
             steps{
             sh "trivy fs --format table -o trivy-fs-report.html ."
@@ -55,8 +61,8 @@ pipeline {
             steps{
                 withCredentials([usernamePassword(credentialsId:"DockerHubCreds",passwordVariable:"DockerPass",usernameVariable:"DockerUser")]){
                     sh 'docker login -u $DockerUser -p $DockerPass'
-                    sh 'docker tag dev-1:latest $DockerUser/dev-1:1.0'
-                    sh 'docker push $DockerUser/dev-1:latest'
+                    sh 'docker tag dev-1:1.0 $DockerUser/dev-1:1.0'
+                    sh 'docker push $DockerUser/dev-1:1.0'
                 }
             }
         }
