@@ -37,7 +37,8 @@ pipeline {
         }
         stage("Trivy File System Scan"){
             steps{
-                sh "trivy fs . --format table -o fs-report.html ."
+                sh """ trivy fs --scanners vuln,secret,misconfig \
+                --format template --template "@html.tpl" -o fs-report.html . """
             }
         }
     }
