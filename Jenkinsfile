@@ -1,5 +1,8 @@
 pipeline {
-    agent any 
+    agent any
+    tools {
+        nodejs "node"
+    }
     environment{
         SONAR_HOME = tool "sonar"
     }
@@ -7,6 +10,11 @@ pipeline {
         stage("Checkout") {
             steps {
                 checkout scm 
+            }
+        }
+        stage("Install Dependencies") {
+            steps{
+                sh "npm install"
             }
         }
     }
