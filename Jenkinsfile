@@ -37,8 +37,16 @@ pipeline {
         }
         stage("Trivy File System Scan"){
             steps{
-                sh """ trivy fs --scanners vuln,secret,misconfig \
-                --format template --template "@html.tpl" -o fs-report.html . """
+            sh """
+            # Download HTML template
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+            
+            # Run Trivy scan
+            trivy fs --scanners vuln,secret,misconfig \
+            --format template \
+            --template "@html.tpl" \
+            -o fs-report.html .
+            """
             }
         }
     }
