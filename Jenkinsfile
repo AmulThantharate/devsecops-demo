@@ -68,7 +68,7 @@ pipeline {
         }
         stage("Start The Docker App"){
             steps{
-                sh 'docker run -it --name ss claw4321/dev-1:1.0'
+                sh 'docker run --rm --name ss claw4321/dev-1:1.0'
             }
         }
     }
