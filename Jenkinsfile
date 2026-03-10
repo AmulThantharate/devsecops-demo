@@ -5,6 +5,7 @@ pipeline {
     }
     environment{
         SONAR_HOME = tool "sonar"
+        IMAGE_TAG   = sh(script: 'git log -1 --format="%h"', returnStdout: true).trim()
     }
     stages {
         stage("Checkout") {
@@ -48,27 +49,27 @@ pipeline {
         }
         stage("Docker Build"){
             steps {
-                sh "docker build -t dev-1:1.0 ."
+                sh "docker build -t dev-1:${IMAGE_TAG} ."
                 echo "Build Success"
             }
         }
         stage("Docker Fs Test"){
             steps {
-                sh "trivy image dev-1:1.0"
+                sh "trivy image dev-1:${IMAGE_TAG}"
             }
         }
         stage("Push to Private Docker Hub Repo"){
             steps{
                 withCredentials([usernamePassword(credentialsId:"DockerHubCreds",passwordVariable:"DockerPass",usernameVariable:"DockerUser")]){
                     sh 'docker login -u $DockerUser -p $DockerPass'
-                    sh 'docker tag dev-1:1.0 $DockerUser/dev-1:1.0'
-                    sh 'docker push $DockerUser/dev-1:1.0'
+                    sh "docker tag dev-1:${IMAGE_TAG} \$DockerUser/dev-1:${IMAGE_TAG}"
+                    sh "docker push \$DockerUser/dev-1:${IMAGE_TAG}"
                 }
             }
         }
         stage("Start The Docker App"){
             steps{
-                sh 'docker run --rm --name ss claw4321/dev-1:1.0'
+                sh "docker run --rm --name ss claw4321/dev-1:${IMAGE_TAG}"
             }
         }
     }
