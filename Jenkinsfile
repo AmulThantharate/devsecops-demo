@@ -40,5 +40,21 @@ pipeline {
             sh "trivy fs --format table -o trivy-fs-report.html ."
             }
         }
+        stage("Docker Build"){
+            sh "docker build -t dev-1:latest ."
+            echo "Build Success"
+        }
+        stage("Docker Fs Test"){
+            sh "trivy image dev-1:latest"
+        }
+        stage("Push to Private Docker Hub Repo"){
+            steps{
+                withCredentials([usernamePassword(credentialsId:"DockerHubCreds",passwordVariable:"DockerPass",usernameVariable:"DockerUser")]){
+                    sh "docker login -u $DockerUser -p $DockerPass"
+                    sh "docker tag dev-1:latest $DockerUser/dev-1:latest"
+                    sh "docker push $DockerUser/dev-1:latest"
+                }
+            }
+        }
     }
 }
