@@ -17,5 +17,12 @@ pipeline {
                 sh "npm install"
             }
         }
+        stage("SonarQube Analysis"){
+            steps{
+                withSonarQubeEnv(credentialsId: 'sonarqube'){
+                    sh "$SONAR_HOME/bin/sonar-scanner -Dsonar.projectName=notetodo -Dsonar.projectKey=notetodo"
+                }
+            }
+        }
     }
 }
