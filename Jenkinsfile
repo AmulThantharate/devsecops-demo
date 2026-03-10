@@ -42,22 +42,27 @@ pipeline {
         }
         stage("Docker Build"){
             steps {
-                sh "docker build -t dev-1:latest ."
+                sh "docker build -t dev-1:1.0 ."
                 echo "Build Success"
             }
         }
         stage("Docker Fs Test"){
             steps {
-                sh "trivy image dev-1:latest"
+                sh "trivy image dev-1:1.0"
             }
         }
         stage("Push to Private Docker Hub Repo"){
             steps{
                 withCredentials([usernamePassword(credentialsId:"DockerHubCreds",passwordVariable:"DockerPass",usernameVariable:"DockerUser")]){
                     sh 'docker login -u $DockerUser -p $DockerPass'
-                    sh 'docker tag dev-1:latest $DockerUser/dev-1:latest'
+                    sh 'docker tag dev-1:latest $DockerUser/dev-1:1.0'
                     sh 'docker push $DockerUser/dev-1:latest'
                 }
+            }
+        }
+        stage("Start The Docker App"){
+            steps{
+                sh 'docker run -it --name ss claw4321/dev-1:1.0'
             }
         }
     }
