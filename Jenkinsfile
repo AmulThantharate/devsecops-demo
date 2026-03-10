@@ -69,7 +69,7 @@ pipeline {
         }
         stage("Start The Docker App"){
             steps{
-                sh "docker run --rm --name ss claw4321/dev-1:${IMAGE_TAG}"
+                sh "docker run -d --name ss claw4321/dev-1:${IMAGE_TAG}"
             }
         }
     }
