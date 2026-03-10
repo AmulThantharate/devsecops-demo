@@ -41,11 +41,15 @@ pipeline {
             }
         }
         stage("Docker Build"){
-            sh "docker build -t dev-1:latest ."
-            echo "Build Success"
+            steps {
+                sh "docker build -t dev-1:latest ."
+                echo "Build Success"
+            }
         }
         stage("Docker Fs Test"){
-            sh "trivy image dev-1:latest"
+            steps {
+                sh "trivy image dev-1:latest"
+            }
         }
         stage("Push to Private Docker Hub Repo"){
             steps{
