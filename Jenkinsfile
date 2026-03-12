@@ -38,10 +38,14 @@ pipeline {
         }
         stage("OWASP"){
             steps{
-                dependencyCheck additionalArguments: '--scan ./ --format XML --out ./', odcInstallation: 'OWASP'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                dependencyCheck additionalArguments: '--scan . --format XML --out .', odcInstallation: 'OWASP'
             }
         }
+        stage('Publish Dependency Check') {
+    steps {
+        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+    }
+}
         stage("Trivy File System Scan"){
             steps{
             sh "trivy fs --format table -o trivy-fs-report.html ."
